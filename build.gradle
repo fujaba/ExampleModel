@@ -1,0 +1,34 @@
+// -PlectureBuild -Pjenkins clean --refresh-dependencies build
+apply plugin: 'java'
+apply plugin: 'maven'
+
+
+repositories {
+	jcenter()
+	mavenCentral()
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots/"
+	}
+}
+test {
+	useJUnit {
+		dependencies {
+			testCompile(group: 'junit', name: 'junit', version: '[4,)')
+			testCompile(group: 'org.sdmlib', name: 'SDMLib', version: '[1.1,)')
+		}
+	}
+}
+dependencies {
+	compile(group: 'com.github.fujaba', name: 'NetworkParser', version: '[4.2,)', classifier: 'core17')
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+defaultTasks 'clean', 'test', 'build', 'fatJar'
